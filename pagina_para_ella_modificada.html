@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Tengo algo que decirte 💌</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    overflow: hidden;
+    touch-action: manipulation;
+  }
+  body {
+    background: radial-gradient(circle at top, #ffe9f1 0%, #ffd0df 35%, #f5a9c4 100%);
+    color: #5a2037;
+  }
+  .hearts { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+  .heart {
+    position: absolute;
+    bottom: -40px;
+    opacity: .65;
+    animation: float 7s linear infinite;
+    font-size: 22px;
+  }
+  @keyframes float {
+    from { transform: translateY(0) rotate(0deg); opacity: 0; }
+    15% { opacity: .7; }
+    to { transform: translateY(-115vh) rotate(25deg); opacity: 0; }
+  }
+  .screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 22px;
+    position: relative;
+  }
+  .card {
+    width: min(430px, 100%);
+    min-height: 560px;
+    border-radius: 30px;
+    padding: 34px 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    background: rgba(255,255,255,.78);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 20px 60px rgba(104,35,64,.22);
+    border: 1px solid rgba(255,255,255,.75);
+    animation: appear .7s ease;
+  }
+  @keyframes appear {
+    from { opacity: 0; transform: translateY(15px) scale(.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .emoji { font-size: 54px; margin-bottom: 15px; }
+  h1 { font-size: 29px; margin: 0 0 14px; line-height: 1.15; }
+  p { font-size: 18px; line-height: 1.6; margin: 10px 0; }
+  .small { font-size: 14px; opacity: .72; margin-top: 20px; }
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 25px;
+    min-height: 52px;
+    position: relative;
+  }
+  button {
+    border: 0;
+    border-radius: 999px;
+    padding: 14px 27px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .18s, box-shadow .18s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #yes {
+    background: #e94f83;
+    color: white;
+    box-shadow: 0 8px 18px rgba(233,79,131,.3);
+  }
+  #no {
+    background: #fff;
+    color: #8b5268;
+    position: relative;
+  }
+  button:active { transform: scale(.94); }
+  .next {
+    margin-top: 27px;
+    background: #e94f83;
+    color: white;
+    box-shadow: 0 8px 18px rgba(233,79,131,.3);
+  }
+  .tap {
+    margin-top: 25px;
+    font-size: 14px;
+    opacity: .65;
+    animation: pulse 1.8s infinite;
+  }
+  @keyframes pulse { 50% { opacity: .3; } }
+  .page { animation: pageIn .6s ease; }
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateX(25px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .progress {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+  }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: rgba(90,32,55,.22);
+  }
+  .dot.active { background: #e94f83; width: 20px; border-radius: 10px; }
+  .cat-doodles { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+  .cat { position:absolute; font-family:"Comic Sans MS","Trebuchet MS",sans-serif; color:#8b5268; font-size:28px; opacity:.75; transform:rotate(var(--r)); animation:catFloat 4s ease-in-out infinite; }
+  @keyframes catFloat { 50% { transform:rotate(var(--r)) translateY(-8px); } }
+  .card { position:relative; z-index:2; }
+  .cat-box { margin:16px auto 4px; padding:10px 14px; border-radius:20px; background:#fff7fa; border:1px dashed rgba(139,82,104,.35); font-size:38px; cursor:pointer; transition:transform .2s; user-select:none; }
+  .cat-box:active { transform:scale(.92) rotate(-2deg); }
+  .secret { margin-top:12px; font-size:14px; opacity:0; transform:translateY(5px); transition:.35s; }
+  .secret.show { opacity:.8; transform:translateY(0); }
+  .love-note { font-size:16px; line-height:1.7; text-align:left; background:#fff8fb; padding:17px 18px; border-radius:20px; border:1px solid rgba(233,79,131,.14); }
+  .heart-burst { position:fixed; pointer-events:none; z-index:10; animation:burst 1s ease forwards; font-size:22px; }
+  @keyframes burst { from {opacity:1; transform:translate(0,0) scale(.7)} to {opacity:0; transform:translate(var(--x),var(--y)) scale(1.35)} }
+
+  .final-cat { font-size: 48px; margin: 18px 0 10px; animation: catBounce 1.8s ease-in-out infinite; }
+  .final-buttons { flex-wrap: wrap; margin-top: 20px; }
+  #accept { background: #e94f83; color: white; box-shadow: 0 8px 18px rgba(233,79,131,.3); }
+  #decline { background: #fff; color: #8b5268; }
+  .answer { min-height: 55px; margin-top: 15px; font-size: 16px; line-height: 1.5; }
+  @keyframes catBounce { 50% { transform: translateY(-7px) rotate(-2deg); } }
+</style>
+</head>
+<body>
+<div class="hearts" id="hearts"></div>
+<div class="cat-doodles" id="catDoodles"></div>
+<div class="screen">
+  <div class="card" id="card"></div>
+  <div class="progress" id="progress"></div>
+</div>
+
+<script>
+const card = document.getElementById("card");
+const progress = document.getElementById("progress");
+let page = 0;
+let noCount = 0;
+
+const pages = [
+  {
+    emoji: "💌",
+    title: "Mi niña de ojitos bonitos...",
+    text: "Hay algo que llevo mucho tiempo queriendo decirle.<br><br>Y esta vez quiero decírselo desde el corazón."
+  },
+  {
+    emoji: "🌷",
+    title: "Usted no es cualquier persona para mí",
+    text: "La conozco desde hace muchos años, y con el paso del tiempo me di cuenta de algo que nunca cambió:<br><br><b>mi corazón siempre ha sabido que es usted.</b>"
+  },
+  {
+    emoji: "🥰",
+    title: "Hay tantas cosas que amo de usted",
+    text: "Amo su forma de ser, su manera de hablar, esos pequeños detalles que quizá usted ni nota... y, sobre todo, esos <b>ojitos bonitos</b> que me encantan desde hace tanto tiempo. ❤️"
+  },
+  {
+    emoji: "🐱",
+    title: "Y aunque quizá no se lo haya dicho así...",
+    text: "Siempre ha sido especial para mí. Entre tantas personas, usted tiene algo que nadie más tiene.<br><br><b>Usted es única para mí.</b>"
+  },
+  {
+    emoji: "❤️",
+    title: "La verdad, mi niña...",
+    text: "Yo siempre la he amado.<br><br>No como algo pasajero, sino como ese amor que permanece incluso cuando pasan los años. Y hoy quiero dejar de guardármelo."
+  },
+  {
+    emoji: "✨",
+    title: "Solamente quiero pedirle algo...",
+    text: "No quiero prometerle una historia perfecta, porque sé que la vida no es así.<br><br>Pero sí quiero prometerle que, si usted me lo permite, voy a querer estar a su lado, cuidarla, quererla y hacerla sentir amada."
+  },
+  {
+    emoji: "💗",
+    title: "Solamente quiero que me deje amarla por el resto de mi vida y estar a su lado.",
+    text: "<b>Porque yo siempre la he amado, mi niña de ojitos bonitos... ❤️</b><br><br>¿Acepta?",
+    final: true
+  }
+];
+
+function burstHearts() {
+  for (let i = 0; i < 14; i++) {
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.textContent = ["♥","♡","💗","✨"][Math.floor(Math.random()*4)];
+    h.style.left = (35 + Math.random()*30) + "%";
+    h.style.bottom = "35%";
+    h.style.animationDelay = (Math.random()*0.4) + "s";
+    h.style.animationDuration = (2 + Math.random()*2) + "s";
+    document.getElementById("hearts").appendChild(h);
+    setTimeout(() => h.remove(), 4500);
+  }
+}
+
+function render() {
+  const p = pages[page];
+  card.innerHTML = `
+    <div class="page">
+      <div class="emoji">${p.emoji}</div>
+      <h1>${p.title}</h1>
+      <p>${p.text}</p>
+      ${p.buttons ? `
+        <div class="buttons">
+          <button id="yes">Sí 💗</button>
+          <button id="no">No 🙃</button>
+        </div>
+        <div class="small">No se preocupe... puede pensarlo 😌</div>
+      ` : p.final ? `
+        <div class="final-cat" id="finalCat">ฅ^•ﻌ•^ฅ 🩷</div>
+        <div class="buttons final-buttons">
+          <button id="accept">Sí, acepto 💗</button>
+          <button id="decline">No acepto 🥺</button>
+        </div>
+        <div id="answer" class="answer"></div>
+        <button class="next" onclick="restart()">Volver a leer 💌</button>
+      ` : `
+        <div class="tap">Toca la pantalla o pulsa continuar ✨</div>
+        <button class="next" onclick="nextPage()">Continuar →</button>
+      `}
+    </div>
+  `;
+  progress.innerHTML = pages.map((_,i)=>`<div class="dot ${i===page?'active':''}"></div>`).join("");
+
+  if (p.interactiveCat) {
+    const catBox=document.getElementById("catBox"), secret=document.getElementById("secret");
+    catBox.onclick=()=>{ secret.classList.add("show"); burstHearts(catBox); };
+  }
+
+  if (p.final) {
+    const cat = document.getElementById("finalCat");
+    const answer = document.getElementById("answer");
+    document.getElementById("accept").onclick = () => {
+      answer.innerHTML = "ฅ(≧▽≦)ฅ 💗<br><b>Entonces déjeme quererla y estar a su lado.</b><br>Prometo cuidar este amor con todo mi corazón.";
+      cat.textContent = "ฅ^•ﻌ•^ฅ ❤️";
+      burstHearts();
+    };
+    document.getElementById("decline").onclick = () => {
+      answer.innerHTML = "ฅ(•́ ᴗ •̀)ฅ 💔<br>Está bien... gracias por leerme hasta aquí.";
+      cat.textContent = "ฅ(•́ ᴗ •̀)ฅ";
+    };
+  }
+
+  if (p.buttons) {
+    document.getElementById("yes").onclick = () => { page = 1; render(); };
+    const no = document.getElementById("no");
+    no.onclick = () => {
+      noCount++;
+      if (noCount === 1) {
+        no.textContent = "¿Segura? 👀";
+        no.style.transform = "translateX(15px)";
+      } else if (noCount === 2) {
+        no.textContent = "Piénsalo bien 🥺";
+        no.style.transform = "translateX(-18px)";
+      } else {
+        no.textContent = "Ese botón no funciona 😂";
+        no.style.transform = `translateX(${Math.random()*50-25}px)`;
+      }
+    };
+  }
+}
+
+function nextPage() {
+  if (page < pages.length - 1) {
+    page++;
+    render();
+  }
+}
+function restart() {
+  page = 0;
+  noCount = 0;
+  render();
+}
+
+function burstHearts(el) {
+  const r=el.getBoundingClientRect();
+  for(let i=0;i<10;i++){ const h=document.createElement("div"); h.className="heart-burst"; h.textContent=["♥","♡","💗","🐾"][Math.floor(Math.random()*4)]; h.style.left=(r.left+r.width/2)+"px"; h.style.top=(r.top+r.height/2)+"px"; h.style.setProperty("--x",(Math.random()*150-75)+"px"); h.style.setProperty("--y",(Math.random()*-150-30)+"px"); document.body.appendChild(h); setTimeout(()=>h.remove(),1000); }
+}
+function makeCatDoodles() {
+  const box=document.getElementById("catDoodles"), cats=["ฅ^•ﻌ•^ฅ","=^･ω･^=","ᓚᘏᗢ","🐾"];
+  for(let i=0;i<8;i++){ const c=document.createElement("div"); c.className="cat"; c.textContent=cats[i%cats.length]; c.style.left=(5+Math.random()*90)+"%"; c.style.top=(8+Math.random()*84)+"%"; c.style.setProperty("--r",(Math.random()*18-9)+"deg"); c.style.animationDelay=(Math.random()*3)+"s"; box.appendChild(c); }
+}
+
+document.body.addEventListener("click", e => {
+  if (e.target.tagName === "BUTTON") return;
+  if (page > 0 && page < pages.length - 1) nextPage();
+});
+
+for (let i=0; i<18; i++) {
+  const h = document.createElement("div");
+  h.className = "heart";
+  h.textContent = ["♥","♡","💗","✨"][Math.floor(Math.random()*4)];
+  h.style.left = Math.random()*100 + "%";
+  h.style.animationDelay = Math.random()*7 + "s";
+  h.style.animationDuration = (5+Math.random()*5) + "s";
+  document.getElementById("hearts").appendChild(h);
+}
+makeCatDoodles();
+render();
+</script>
+</body>
+</html>
